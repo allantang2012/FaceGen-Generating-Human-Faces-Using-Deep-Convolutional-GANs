@@ -59,9 +59,11 @@ Planned extras for full credit on the advanced portion:
 ## Local layout
 
 ```
-data/              # CelebA (not committed; download locally)
-outputs/samples/ # Generated images and grids during training
-src/               # Training and evaluation code (to be added)
+data/               # CelebA (not committed; download locally)
+outputs/samples/  # Saved sample grids each epoch
+outputs/logs/       # Loss CSV (local; gitignored except structure)
+src/                # Dataset, DCGAN modules, training entrypoint
+checkpoints/        # Saved weights (gitignored)
 ```
 
 ## Setup (preview)
@@ -72,4 +74,16 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-Place the CelebA dataset under `data/` following the loader you implement in `src/`.
+Place the extracted CelebA images under `data/` (for example `data/img_align_celeba/` with `.jpg` files).
+
+### Train DCGAN (baseline)
+
+From the repository root (with your virtual environment activated):
+
+```bash
+python -m src.train_dcgan --celeba-root data/img_align_celeba --epochs 5 --batch-size 128
+```
+
+This writes per-epoch sample grids to `outputs/samples/`, mean losses to `outputs/logs/dcgan_losses.csv`, and final weights to `checkpoints/`. Use `--checkpoint-every N` to also save periodic checkpoints.
+
+**Next steps (later weeks):** WGAN-GP trainer, FID helper, latent interpolation script, and side-by-side comparison plots.
