@@ -62,7 +62,7 @@ Planned extras for full credit on the advanced portion:
 data/               # CelebA (not committed; download locally)
 outputs/samples/  # Saved sample grids each epoch
 outputs/logs/       # Loss CSV (local; gitignored except structure)
-src/                # Dataset, DCGAN modules, training entrypoint
+src/                # Dataset, models, DCGAN / WGAN-GP training, latent interpolation
 checkpoints/        # Saved weights (gitignored)
 ```
 
@@ -86,4 +86,22 @@ python -m src.train_dcgan --celeba-root data/img_align_celeba --epochs 5 --batch
 
 This writes per-epoch sample grids to `outputs/samples/`, mean losses to `outputs/logs/dcgan_losses.csv`, and final weights to `checkpoints/`. Use `--checkpoint-every N` to also save periodic checkpoints.
 
-**Next steps (later weeks):** WGAN-GP trainer, FID helper, latent interpolation script, and side-by-side comparison plots.
+### Train WGAN-GP (extension)
+
+Uses the same generator/critic architecture as DCGAN; default output directory is `outputs/wgan_gp/` so runs do not overwrite DCGAN samples.
+
+```bash
+python -m src.train_wgan_gp --celeba-root data/img_align_celeba --epochs 5 --batch-size 64
+```
+
+Losses are logged to `outputs/wgan_gp/logs/wgan_gp_losses.csv`. Checkpoints are named `wgan_gp_*_final.pt` under `checkpoints/`.
+
+### Latent interpolation
+
+After you have a trained generator checkpoint:
+
+```bash
+python -m src.interpolate_latent --generator-weights checkpoints/generator_final.pt --steps 8
+```
+
+**Ideas for later weeks:** FID between real and generated folders, and a small notebook or script to plot DCGAN vs WGAN-GP loss curves side by side.
