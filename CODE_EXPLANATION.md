@@ -53,7 +53,15 @@ Same backbone, different optimization:
 
 ## `src/interpolate_latent.py` — latent-space exploration
 
-Loads a saved DCGAN generator, samples two latent vectors `z0` and `z1`, builds `args.steps` linearly interpolated points between them (`alpha * z1 + (1 - alpha) * z0`), runs them through the generator in a single batch, and saves the resulting row of images. Useful for showing that the generator has learned a continuous mapping rather than memorized examples.
+Loads a saved DCGAN generator, samples two latent vectors `z0` and `z1`, builds `args.steps` linearly interpolated points between them (`alpha * z1 + (1 - alpha) * z0`), runs them through the generator in a single batch, and saves the resulting row of images. Useful for showing that the generator has learned a continuous mapping rather than memorized examples. The checkpoint is loaded with `weights_only=True` so untrusted `.pt` files cannot execute arbitrary pickled code.
+
+## `src/plot_losses.py` — loss-curve rendering
+
+Reads a training CSV (DCGAN columns `epoch,mean_loss_d,mean_loss_g`, or WGAN-GP columns `epoch,mean_wasserstein,mean_loss_g,mean_gp`) and renders a labeled matplotlib line plot. Used to produce `outputs/samples/loss_curve.png` for the README.
+
+## `src/download_celeba_subset.py` — dataset bootstrap
+
+Streams images from a public Hugging Face CelebA mirror (default: `nielsr/CelebA-faces`) and writes them as JPEGs to `data/celeba_subset/` so training can be reproduced without manually downloading and extracting the official CelebA archive. Skips the download if the target directory already contains enough images.
 
 ## How the pieces fit together
 

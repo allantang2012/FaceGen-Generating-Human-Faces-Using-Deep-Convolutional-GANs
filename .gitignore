@@ -17,6 +17,9 @@ data/*
 outputs/*
 !outputs/samples/
 !outputs/samples/.gitkeep
+!outputs/logs/
+outputs/logs/*
+!outputs/logs/*.csv
 *.zip
 *.tar
 *.tar.gz

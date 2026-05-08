@@ -38,7 +38,7 @@ def main() -> None:
     torch.manual_seed(args.seed)
 
     net_g = Generator(nz=args.nz, ngf=args.ngf).to(device)
-    state = torch.load(args.generator_weights, map_location=device)
+    state = torch.load(args.generator_weights, map_location=device, weights_only=True)
     net_g.load_state_dict(state)
     net_g.eval()
 
