@@ -59,6 +59,10 @@ Loads a saved DCGAN generator, samples two latent vectors `z0` and `z1`, builds 
 
 Reads a training CSV (DCGAN columns `epoch,mean_loss_d,mean_loss_g`, or WGAN-GP columns `epoch,mean_wasserstein,mean_loss_g,mean_gp`) and renders a labeled matplotlib line plot. Used to produce `outputs/samples/loss_curve.png` for the README.
 
+## `src/compare_models.py` — DCGAN vs WGAN-GP side-by-side
+
+Loads both trained generators, samples one shared latent batch with a fixed seed, and decodes through each network. Stacks the two resulting 8-wide sample grids vertically into a single PNG (top = DCGAN, bottom = WGAN-GP) so reviewers can compare face style on identical noise. Also reads both training CSVs and plots the two generator-loss curves on a shared epoch axis. Used to produce `outputs/samples/comparison_samples.png` and `outputs/samples/comparison_loss.png`.
+
 ## `src/download_celeba_subset.py` — dataset bootstrap
 
 Streams images from a public Hugging Face CelebA mirror (default: `nielsr/CelebA-faces`) and writes them as JPEGs to `data/celeba_subset/` so training can be reproduced without manually downloading and extracting the official CelebA archive. Skips the download if the target directory already contains enough images.

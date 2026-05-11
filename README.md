@@ -86,6 +86,27 @@ The smooth morphing of identity, lighting, and pose along the row is evidence th
 
 Per-epoch grids are committed under `outputs/samples/epoch_001.png` through `epoch_010.png` so the full **training progression** is browsable directly on GitHub.
 
+### DCGAN vs WGAN-GP (model comparison)
+
+The repository also includes a WGAN-GP run on the same backbone and dataset (5 epochs, batch size 64, `n_critic=5`, `gp_lambda=10`). The two trained generators are decoded on the **same latent batch** to make differences in style and stability directly visible.
+
+![DCGAN (top) vs WGAN-GP (bottom)](outputs/samples/comparison_samples.png)
+
+![Generator loss comparison](outputs/samples/comparison_loss.png)
+
+Notes on the run:
+
+- DCGAN's BCE generator loss settles in the ~4–5 band after ~3 epochs (textbook equilibrium).
+- WGAN-GP's generator loss is `-D(G(z))` and is on a different scale; the **Wasserstein estimate** (real − fake critic scores) is the right convergence signal there. It drops from ~43 at epoch 1 to ~22 by epoch 3 and stays in the 22–30 band, with gradient-penalty values around 0.6–1.1 (close to the target gradient norm of 1).
+- Visually, WGAN-GP samples after 5 epochs show comparable face structure to DCGAN at 10 epochs with arguably more variety, consistent with WGAN-GP's reputation for more stable training given a similar compute budget.
+
+Regenerate either artifact with:
+
+```bash
+python -m src.train_wgan_gp --celeba-root data/celeba_subset --epochs 5 --batch-size 64
+python -m src.compare_models
+```
+
 ## 4. Extra criteria pursued
 
 Concretely shipped in this repository, with **artifacts checked into the repo**:
@@ -96,7 +117,7 @@ Concretely shipped in this repository, with **artifacts checked into the repo**:
 | **Tracking / metrics** | Mean per-epoch **generator and discriminator losses** logged to CSV during training; rendered as a labeled loss curve via `src/plot_losses.py`. WGAN-GP additionally tracks the **Wasserstein estimate** and **gradient-penalty** value. | [`outputs/samples/loss_curve.png`](outputs/samples/loss_curve.png), [`outputs/logs/dcgan_losses.csv`](outputs/logs/dcgan_losses.csv) |
 | **Image gallery** | A sample grid from a fixed noise vector is saved **every epoch**, so the visual progression of training is browsable directly on GitHub. | `outputs/samples/epoch_001.png` … `epoch_010.png` |
 | **Hyperparameter exposure** | All training knobs are CLI flags: learning rate, batch size, latent dim `nz`, generator/discriminator widths (`ngf`, `ndf`), Adam betas, and (WGAN-GP only) `n_critic` and `gp_lambda`. Every run is fully described by its command line. | `src/train_dcgan.py`, `src/train_wgan_gp.py` |
-| **Model comparison** | DCGAN vs. WGAN-GP share the **same backbone, dataset, and image size**, so loss curves and sample grids are directly comparable. | `src/dcgan.py`, `src/wgan_gp.py` |
+| **Model comparison** | DCGAN vs. WGAN-GP share the **same backbone, dataset, and image size**. Both models are trained, weights saved, and decoded on the same latent batch for a direct visual comparison. | [`outputs/samples/comparison_samples.png`](outputs/samples/comparison_samples.png), [`outputs/samples/comparison_loss.png`](outputs/samples/comparison_loss.png), `src/compare_models.py` |
 
 ## 5. Difficulties faced and how they were solved
 
@@ -121,6 +142,7 @@ src/
   train_wgan_gp.py          # WGAN-GP training entrypoint
   interpolate_latent.py     # latent-space interpolation utility
   plot_losses.py            # render loss-curve PNG from a training CSV
+  compare_models.py         # build DCGAN-vs-WGAN-GP side-by-side artifacts
   download_celeba_subset.py # fetch a small CelebA subset from a HF mirror
 checkpoints/                # Saved weights (gitignored)
 ```

@@ -20,6 +20,12 @@ outputs/*
 !outputs/logs/
 outputs/logs/*
 !outputs/logs/*.csv
+!outputs/wgan_gp/
+outputs/wgan_gp/*
+!outputs/wgan_gp/samples/
+!outputs/wgan_gp/logs/
+outputs/wgan_gp/logs/*
+!outputs/wgan_gp/logs/*.csv
 *.zip
 *.tar
 *.tar.gz

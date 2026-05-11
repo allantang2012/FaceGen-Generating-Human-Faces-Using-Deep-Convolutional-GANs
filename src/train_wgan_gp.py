@@ -152,7 +152,7 @@ def main() -> None:
             torch.save(net_d.state_dict(), ckpt_dir / f"wgan_gp_critic_epoch_{epoch:03d}.pt")
 
         print(
-            f"epoch {epoch} mean_w≈{avg_w:.4f} mean_loss_g={avg_g:.4f} mean_gp={avg_gp:.4f} device={device}"
+            f"epoch {epoch} mean_w={avg_w:.4f} mean_loss_g={avg_g:.4f} mean_gp={avg_gp:.4f} device={device}"
         )
 
     torch.save(net_g.state_dict(), ckpt_dir / "wgan_gp_generator_final.pt")
