@@ -59,6 +59,10 @@ Loads a saved DCGAN generator, samples two latent vectors `z0` and `z1`, builds 
 
 Reads a training CSV (DCGAN columns `epoch,mean_loss_d,mean_loss_g`, or WGAN-GP columns `epoch,mean_wasserstein,mean_loss_g,mean_gp`) and renders a labeled matplotlib line plot. Used to produce `outputs/samples/loss_curve.png` for the README.
 
+## `src/compute_fid.py` — Fréchet Inception Distance
+
+Loads a random subset of real images from a folder (same preprocessing as training, then mapped to `[0, 1]` for the metric). For each generator checkpoint, samples fresh noise vectors, decodes batches through the network, and feeds fakes into `torchmetrics.image.fid.FrechetInceptionDistance`. Each model gets its own FID object with the same real batch statistics. Lower FID means the generated distribution is closer to real images in Inception feature space. Results append to `outputs/logs/fid_scores.csv` so DCGAN and WGAN-GP can be compared numerically as well as visually.
+
 ## `src/compare_models.py` — DCGAN vs WGAN-GP side-by-side
 
 Loads both trained generators, samples one shared latent batch with a fixed seed, and decodes through each network. Stacks the two resulting 8-wide sample grids vertically into a single PNG (top = DCGAN, bottom = WGAN-GP) so reviewers can compare face style on identical noise. Also reads both training CSVs and plots the two generator-loss curves on a shared epoch axis. Used to produce `outputs/samples/comparison_samples.png` and `outputs/samples/comparison_loss.png`.

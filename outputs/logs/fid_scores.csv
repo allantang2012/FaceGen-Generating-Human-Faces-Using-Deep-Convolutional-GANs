@@ -1,0 +1,3 @@
+model,fid,num_samples,weights,real_dir
+dcgan,371.7126,512,checkpoints\generator_final.pt,data\celeba_subset
+wgan_gp,274.5414,512,checkpoints\wgan_gp_generator_final.pt,data\celeba_subset

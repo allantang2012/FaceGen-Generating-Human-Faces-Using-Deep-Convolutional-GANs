@@ -107,6 +107,20 @@ python -m src.train_wgan_gp --celeba-root data/celeba_subset --epochs 5 --batch-
 python -m src.compare_models
 ```
 
+### FID (distribution metric)
+
+Fréchet Inception Distance compares **real** vs **generated** image distributions (lower is better). After training, score one or both checkpoints against the same real folder:
+
+```bash
+pip install torchmetrics
+python -m src.compute_fid --real-dir data/celeba_subset \
+  --generator-weights checkpoints/generator_final.pt --label dcgan \
+  --generator-weights checkpoints/wgan_gp_generator_final.pt --label wgan_gp \
+  --num-samples 2048
+```
+
+Scores append to `outputs/logs/fid_scores.csv`.
+
 ## 4. Extra criteria pursued
 
 Concretely shipped in this repository, with **artifacts checked into the repo**:
@@ -114,7 +128,7 @@ Concretely shipped in this repository, with **artifacts checked into the repo**:
 | Extra criterion | What is implemented | Artifact |
 |---|---|---|
 | **Latent-space exploration** | `src/interpolate_latent.py` performs a 10-step linear walk between two random latent vectors and decodes through the trained generator. Smooth morphing of identity, lighting, and pose. | [`outputs/samples/latent_interpolation.png`](outputs/samples/latent_interpolation.png) |
-| **Tracking / metrics** | Mean per-epoch **generator and discriminator losses** logged to CSV during training; rendered as a labeled loss curve via `src/plot_losses.py`. WGAN-GP additionally tracks the **Wasserstein estimate** and **gradient-penalty** value. | [`outputs/samples/loss_curve.png`](outputs/samples/loss_curve.png), [`outputs/logs/dcgan_losses.csv`](outputs/logs/dcgan_losses.csv) |
+| **Tracking / metrics** | Per-epoch **loss CSVs**, loss-curve plots, and optional **FID** via `src/compute_fid.py` (Inception features; compares real folder vs samples from a checkpoint). WGAN-GP also logs **Wasserstein estimate** and **gradient penalty**. | [`outputs/samples/loss_curve.png`](outputs/samples/loss_curve.png), [`outputs/logs/dcgan_losses.csv`](outputs/logs/dcgan_losses.csv), [`outputs/logs/fid_scores.csv`](outputs/logs/fid_scores.csv) |
 | **Image gallery** | A sample grid from a fixed noise vector is saved **every epoch**, so the visual progression of training is browsable directly on GitHub. | `outputs/samples/epoch_001.png` … `epoch_010.png` |
 | **Hyperparameter exposure** | All training knobs are CLI flags: learning rate, batch size, latent dim `nz`, generator/discriminator widths (`ngf`, `ndf`), Adam betas, and (WGAN-GP only) `n_critic` and `gp_lambda`. Every run is fully described by its command line. | `src/train_dcgan.py`, `src/train_wgan_gp.py` |
 | **Model comparison** | DCGAN vs. WGAN-GP share the **same backbone, dataset, and image size**. Both models are trained, weights saved, and decoded on the same latent batch for a direct visual comparison. | [`outputs/samples/comparison_samples.png`](outputs/samples/comparison_samples.png), [`outputs/samples/comparison_loss.png`](outputs/samples/comparison_loss.png), `src/compare_models.py` |
@@ -143,6 +157,7 @@ src/
   interpolate_latent.py     # latent-space interpolation utility
   plot_losses.py            # render loss-curve PNG from a training CSV
   compare_models.py         # build DCGAN-vs-WGAN-GP side-by-side artifacts
+  compute_fid.py            # FID between real images and generator samples
   download_celeba_subset.py # fetch a small CelebA subset from a HF mirror
 checkpoints/                # Saved weights (gitignored)
 ```
